@@ -8,18 +8,32 @@ build-type:    Simple
 common warnings
   ghc-options: -Wall
 
-common extensions
+common settings
+  default-language:   GHC2021
   default-extensions:
     BlockArguments
     LambdaCase
     OverloadedRecordDot
     OverloadedStrings
 
-executable cis
-  import:           warnings, extensions
-  main-is:          Main.hs
-  hs-source-dirs:   app
-  default-language: GHC2021
+common dependencies
   build-depends:
     , base  ^>=4.18.0.0
     , text
+
+executable cisserver
+  import:         warnings, settings, dependencies
+  main-is:        Main.hs
+  hs-source-dirs: server
+  build-depends:  cis
+
+executable cisclient
+  import:         warnings, settings, dependencies
+  main-is:        Main.hs
+  hs-source-dirs: client
+  build-depends:  cis
+
+library
+  import:          warnings, settings, dependencies
+  hs-source-dirs:  lib
+  exposed-modules: Cis
