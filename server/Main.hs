@@ -5,7 +5,8 @@ import Data.Function ((&))
 import GHC.Generics (Generic)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp
-    ( defaultSettings
+    ( Port
+    , defaultSettings
     , runSettings
     , setBeforeMainLoop
     , setPort
@@ -23,7 +24,7 @@ import Servant
     , type (:<|>) (..)
     , type (:>)
     )
-import System.IO (hPutStrLn, stderr)
+import System.Environment (lookupEnv)
 
 {- FOURMOLU_DISABLE -}
 
@@ -37,14 +38,17 @@ type ItemApi
 itemApi :: Proxy ItemApi
 itemApi = Proxy
 
+defaultPort :: Port
+defaultPort = 3000
+
 main :: IO ()
 main =
     do
-        let port = 3000
-            settings =
+        port <- maybe defaultPort read <$> lookupEnv "PORT"
+        let settings =
                 defaultSettings
                     & setPort port
-                    & setBeforeMainLoop (hPutStrLn stderr ("listening on port " ++ show port))
+                    & setBeforeMainLoop (putStrLn $ "listening on port " ++ show port)
         app <- mkApp
         runSettings settings app
 
