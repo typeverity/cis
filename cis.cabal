@@ -1,0 +1,18 @@
+cabal-version:   3.0
+name:            cis
+version:         0.1.0.0
+license:         NONE
+author:          ilmari.vacklin@iki.fi
+maintainer:      Ilmari Vacklin
+build-type:      Simple
+extra-doc-files: CHANGELOG.md
+
+common warnings
+    ghc-options: -Wall
+
+executable cis
+    import:           warnings
+    main-is:          Main.hs
+    build-depends:    base ^>=4.18.0.0
+    hs-source-dirs:   app
+    default-language: GHC2021
