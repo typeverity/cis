@@ -12,6 +12,8 @@ common settings
   default-language:   GHC2021
   default-extensions:
     BlockArguments
+    DataKinds
+    ExplicitNamespaces
     LambdaCase
     OverloadedRecordDot
     OverloadedStrings
@@ -25,7 +27,14 @@ executable cisserver
   import:         warnings, settings, dependencies
   main-is:        Main.hs
   hs-source-dirs: server
-  build-depends:  cis
+  build-depends:
+    , aeson
+    , cis
+    , servant
+    , servant-server
+    , transformers
+    , wai
+    , warp
 
 executable cisclient
   import:         warnings, settings, dependencies
