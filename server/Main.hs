@@ -5,13 +5,7 @@ import Data.Aeson (FromJSON, ToJSON)
 import Data.Function ((&))
 import GHC.Generics (Generic)
 import Network.Wai (Application)
-import Network.Wai.Handler.Warp
-    ( Port
-    , defaultSettings
-    , runSettings
-    , setBeforeMainLoop
-    , setPort
-    )
+import Network.Wai.Handler.Lambda (run)
 import OpenTelemetry.Instrumentation.Wai (newOpenTelemetryWaiMiddleware)
 import OpenTelemetry.Trace
     ( initializeGlobalTracerProvider
@@ -30,18 +24,7 @@ import Servant
     , type (:<|>) (..)
     , type (:>)
     )
-import System.Envy (FromEnv, decodeWithDefaults)
-import Text.Printf (printf)
 import Prelude hiding (id)
-
-data Config = Config
-    {port :: Port}
-    deriving (Generic)
-
-defaultConfig :: Config
-defaultConfig = Config{port = 3000}
-
-instance FromEnv Config
 
 {- FOURMOLU_DISABLE -}
 
@@ -57,16 +40,11 @@ itemApi = Proxy
 
 main :: IO ()
 main = bracket initializeGlobalTracerProvider shutdownTracerProvider $ const do
-    config <- decodeWithDefaults defaultConfig
     app <- mkApp
     otelMW <- newOpenTelemetryWaiMiddleware
     app
         & otelMW
-        & runSettings
-            ( defaultSettings
-                & setPort config.port
-                & setBeforeMainLoop (putStrLn $ printf "listening on port %d" config.port)
-            )
+        & run
 
 mkApp :: IO Application
 mkApp = pure $ serve itemApi server

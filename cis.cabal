@@ -38,7 +38,7 @@ executable cisserver
     , servant-server
     , transformers
     , wai
-    , warp
+    , wai-lambda
 
 executable cisclient
   import:         warnings, settings, dependencies
