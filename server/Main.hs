@@ -26,7 +26,8 @@ import Servant
     )
 import System.Environment (lookupEnv)
 import System.IO (hPutStrLn, stderr)
-import Text.Read (readEither, readMaybe)
+import Text.Printf (printf)
+import Text.Read (readEither)
 
 {- FOURMOLU_DISABLE -}
 
@@ -57,13 +58,15 @@ readPort defaultPort = do
     maybe (pure defaultPort) parsePort envPort
   where
     parsePort portString =
-        either
-            ( \err -> do
-                hPutStrLn stderr ("warning: could not parse value of PORT (`" ++ portString ++ "`), using default port " ++ show defaultPort ++ " instead: " ++ err)
-                pure defaultPort
-            )
-            pure
-            $ readEither portString
+        readEither portString
+            & either (complain portString) pure
+    complain portString err =
+        defaultPort `withComplaint` printf "warning: could not parse value of PORT (`%s`), using default port %d instead: %s" portString defaultPort err
+
+withComplaint :: a -> String -> IO a
+withComplaint value msg = do
+    hPutStrLn stderr msg
+    pure value
 
 mkApp :: IO Application
 mkApp = pure $ serve itemApi server
