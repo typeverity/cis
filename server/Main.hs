@@ -1,5 +1,6 @@
 module Main (main) where
 
+import Control.Exception (bracket)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Function ((&))
 import GHC.Generics (Generic)
@@ -11,6 +12,8 @@ import Network.Wai.Handler.Warp
     , setBeforeMainLoop
     , setPort
     )
+import OpenTelemetry.Instrumentation.Wai (newOpenTelemetryWaiMiddleware)
+import OpenTelemetry.Trace
 import Servant
     ( Capture
     , Get
@@ -42,15 +45,18 @@ itemApi :: Proxy ItemApi
 itemApi = Proxy
 
 main :: IO ()
-main =
-    do
-        port <- readPort 3000
-        let settings =
-                defaultSettings
-                    & setPort port
-                    & setBeforeMainLoop (printf "listening on port %d" port)
-        app <- mkApp
-        runSettings settings app
+main = withGlobalTracer do
+    port <- readPort 3000
+    let settings =
+            defaultSettings
+                & setPort port
+                & setBeforeMainLoop (printf "listening on port %d" port)
+    app <- mkApp
+    otelMW <- newOpenTelemetryWaiMiddleware
+    runSettings settings $ otelMW app
+  where
+    withGlobalTracer act =
+        bracket initializeGlobalTracerProvider shutdownTracerProvider (const act)
 
 readPort :: Port -> IO Port
 readPort defaultPort = do

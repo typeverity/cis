@@ -9,6 +9,7 @@ common warnings
   ghc-options: -Wall
 
 common settings
+  ghc-options:        -threaded
   default-language:   GHC2021
   default-extensions:
     BlockArguments
@@ -30,6 +31,8 @@ executable cisserver
   build-depends:
     , aeson
     , cis
+    , hs-opentelemetry-instrumentation-wai
+    , hs-opentelemetry-sdk
     , servant
     , servant-server
     , transformers
