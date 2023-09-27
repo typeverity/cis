@@ -30,10 +30,17 @@ import Servant
     , type (:<|>) (..)
     , type (:>)
     )
-import System.Environment (lookupEnv)
-import System.IO (hPutStrLn, stderr)
+import System.Envy (FromEnv, decodeWithDefaults)
 import Text.Printf (printf)
-import Text.Read (readEither)
+
+data Config = Config
+    {port :: Port}
+    deriving (Generic)
+
+defaultConfig :: Config
+defaultConfig = Config{port = 3000}
+
+instance FromEnv Config
 
 {- FOURMOLU_DISABLE -}
 
@@ -49,32 +56,16 @@ itemApi = Proxy
 
 main :: IO ()
 main = bracket initializeGlobalTracerProvider shutdownTracerProvider $ const do
-    port <- readPort 3000
+    config <- decodeWithDefaults defaultConfig
     app <- mkApp
     otelMW <- newOpenTelemetryWaiMiddleware
     app
         & otelMW
         & runSettings
             ( defaultSettings
-                & setPort port
-                & setBeforeMainLoop (printf "listening on port %d" port)
+                & setPort config.port
+                & setBeforeMainLoop (putStrLn $ printf "listening on port %d" config.port)
             )
-
-readPort :: Port -> IO Port
-readPort defaultPort = do
-    envPort <- lookupEnv "PORT"
-    maybe (pure defaultPort) parsePort envPort
-  where
-    parsePort portString =
-        readEither portString
-            & either (complain portString) pure
-    complain portString err =
-        defaultPort `withComplaint` printf "warning: could not parse value of PORT (`%s`), using default port %d instead: %s" portString defaultPort err
-
-withComplaint :: a -> String -> IO a
-withComplaint value msg = do
-    hPutStrLn stderr msg
-    pure value
 
 mkApp :: IO Application
 mkApp = pure $ serve itemApi server
