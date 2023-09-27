@@ -45,18 +45,17 @@ itemApi :: Proxy ItemApi
 itemApi = Proxy
 
 main :: IO ()
-main = withGlobalTracer do
+main = bracket initializeGlobalTracerProvider shutdownTracerProvider $ const do
     port <- readPort 3000
-    let settings =
-            defaultSettings
-                & setPort port
-                & setBeforeMainLoop (printf "listening on port %d" port)
     app <- mkApp
     otelMW <- newOpenTelemetryWaiMiddleware
-    runSettings settings $ otelMW app
-  where
-    withGlobalTracer act =
-        bracket initializeGlobalTracerProvider shutdownTracerProvider (const act)
+    app
+        & otelMW
+        & runSettings
+            ( defaultSettings
+                & setPort port
+                & setBeforeMainLoop (printf "listening on port %d" port)
+            )
 
 readPort :: Port -> IO Port
 readPort defaultPort = do
