@@ -14,6 +14,9 @@ import Network.Wai.Handler.Warp
     )
 import OpenTelemetry.Instrumentation.Wai (newOpenTelemetryWaiMiddleware)
 import OpenTelemetry.Trace
+    ( initializeGlobalTracerProvider
+    , shutdownTracerProvider
+    )
 import Servant
     ( Capture
     , Get
