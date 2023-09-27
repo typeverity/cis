@@ -48,7 +48,7 @@ main =
         let settings =
                 defaultSettings
                     & setPort port
-                    & setBeforeMainLoop (putStrLn $ "listening on port " ++ show port)
+                    & setBeforeMainLoop (printf "listening on port %d" port)
         app <- mkApp
         runSettings settings app
 
