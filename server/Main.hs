@@ -32,6 +32,7 @@ import Servant
     )
 import System.Envy (FromEnv, decodeWithDefaults)
 import Text.Printf (printf)
+import Prelude hiding (id)
 
 data Config = Config
     {port :: Port}
@@ -74,19 +75,19 @@ server :: Server ItemApi
 server = getItems :<|> getItemById
 
 getItems :: Handler [Item]
-getItems = return [exampleItem]
+getItems = pure [exampleItem]
 
 getItemById :: Integer -> Handler Item
 getItemById = \case
-    0 -> return exampleItem
+    0 -> pure exampleItem
     _ -> throwError err404
 
 exampleItem :: Item
-exampleItem = Item 0 "example item"
+exampleItem = Item{id = 0, text = "example item"}
 
 data Item = Item
-    { itemId :: Integer
-    , itemText :: String
+    { id :: Integer
+    , text :: String
     }
     deriving (Eq, Show, Generic)
 
