@@ -1,0 +1,10 @@
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  CisServer:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - arm64
+      PackageType: Zip
+      CodeUri: out/cisserver

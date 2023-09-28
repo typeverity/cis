@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM ubuntu:23.10 AS build
 
 # Use a login shell to source ~/.profile so we get $PATH set properly so we can find `cabal`.
@@ -40,4 +41,4 @@ RUN apt update && apt install -y libffi8 libgmp10 libncurses6 libtinfo6
 
 COPY --from=build /cisserver /usr/local/bin/cisserver
 
-CMD ["/usr/local/bin/cisserver"]
+CMD ["bash", "-c", "/usr/local/bin/cisserver"]
