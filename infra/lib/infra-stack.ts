@@ -1,4 +1,5 @@
 import * as cdk from "aws-cdk-lib";
+import { LambdaRestApi, RestApi } from "aws-cdk-lib/aws-apigateway";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   Architecture,
@@ -16,6 +17,10 @@ export class InfraStack extends cdk.Stack {
       code: DockerImageCode.fromImageAsset("..", {
         platform: Platform.LINUX_ARM64,
       }),
+    });
+
+    const apiGW = new LambdaRestApi(this, "APIGateway", {
+      handler: dockerLambda,
     });
   }
 }
