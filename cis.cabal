@@ -30,6 +30,8 @@ executable cisserver
   hs-source-dirs: server
   build-depends:
     , aeson
+    , aws-lambda-haskell-runtime
+    , aws-lambda-haskell-runtime-wai
     , cis
     , envy
     , hs-opentelemetry-instrumentation-wai
@@ -38,7 +40,6 @@ executable cisserver
     , servant-server
     , transformers
     , wai
-    , wai-lambda
 
 executable cisclient
   import:         warnings, settings, dependencies
