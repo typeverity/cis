@@ -4,9 +4,6 @@ fourmolu.yaml
 run-jaeger.sh
 Dockerfile
 out/
-.aws-sam/
-template.yaml
-samconfig.toml
-build-lambda.sh
 .dockerignore
 .gitignore
+infra/

@@ -1,9 +1,9 @@
 module Main (main) where
 
-import AWS.Lambda.Runtime (pureRuntime)
+import Aws.Lambda (defaultDispatcherOptions)
+import Aws.Lambda.Wai (WaiLambdaProxyType (APIGateway), runWaiAsLambda)
 import Control.Exception (bracket)
 import Data.Aeson (FromJSON, ToJSON)
-import Data.Function ((&))
 import GHC.Generics (Generic)
 import Network.Wai (Application)
 import OpenTelemetry.Instrumentation.Wai (newOpenTelemetryWaiMiddleware)
@@ -38,16 +38,10 @@ type ItemApi
 itemApi :: Proxy ItemApi
 itemApi = Proxy
 
-handler :: WaiHandler Application
-handler = waiHandler
-
 main :: IO ()
 main = bracket initializeGlobalTracerProvider shutdownTracerProvider $ const do
-    app <- mkApp
     otelMW <- newOpenTelemetryWaiMiddleware
-    app
-        & otelMW
-        & pureRuntime
+    runWaiAsLambda APIGateway defaultDispatcherOptions "handler" $ fmap otelMW mkApp
 
 mkApp :: IO Application
 mkApp = pure $ serve itemApi server
