@@ -30,5 +30,13 @@ export class InfraStack extends cdk.Stack {
         origin: new RestApiOrigin(apiGW),
       },
     });
+
+    new cdk.CfnOutput(this, "CloudFrontDistributionDomainName", {
+      value: cf.distributionDomainName,
+    });
+
+    new cdk.CfnOutput(this, "CloudFrontDomainName", {
+      value: cf.domainName,
+    });
   }
 }
