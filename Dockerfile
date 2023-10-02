@@ -42,4 +42,5 @@ RUN apt update && apt install -y libffi8 libgmp10 libncurses6 libtinfo6
 
 COPY --from=build /asset/cisserver /asset/
 
-CMD ["/asset/cisserver"]
+ENTRYPOINT [ "/asset/cisserver" ]
+CMD ["api-gateway"]

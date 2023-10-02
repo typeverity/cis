@@ -1,5 +1,10 @@
 import * as cdk from "aws-cdk-lib";
 import { LambdaRestApi, RestApi } from "aws-cdk-lib/aws-apigateway";
+import {
+  CloudFrontWebDistribution,
+  Distribution,
+} from "aws-cdk-lib/aws-cloudfront";
+import { RestApiOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   Architecture,
@@ -21,6 +26,12 @@ export class InfraStack extends cdk.Stack {
 
     const apiGW = new LambdaRestApi(this, "APIGateway", {
       handler: dockerLambda,
+    });
+
+    const cf = new Distribution(this, "CloudFront", {
+      defaultBehavior: {
+        origin: new RestApiOrigin(apiGW),
+      },
     });
   }
 }
