@@ -33,12 +33,13 @@ RUN --mount=type=cache,target=dist-newstyle --mount=type=cache,target=/root/.cab
 
 RUN --mount=type=cache,target=dist-newstyle --mount=type=cache,target=/root/.cabal \
     cabal install cisserver --overwrite-policy=always && \
-    cp ~/.cabal/bin/cisserver /
+    mkdir /asset/ && \
+    cp ~/.cabal/bin/cisserver /asset/
 
 FROM ubuntu:23.10
 
 RUN apt update && apt install -y libffi8 libgmp10 libncurses6 libtinfo6
 
-COPY --from=build /cisserver /usr/local/bin/cisserver
+COPY --from=build /asset/cisserver /asset/
 
-CMD ["bash", "-c", "/usr/local/bin/cisserver"]
+CMD ["bash", "-c", "/asset/cisserver"]
