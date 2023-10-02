@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Aws.Lambda (Handler (StandaloneLambdaHandler), defaultDispatcherOptions)
+import Aws.Lambda (defaultDispatcherOptions)
 import Aws.Lambda.Wai (WaiLambdaProxyType (APIGateway), runWaiAsLambda)
 import Control.Exception (bracket)
 import Data.Aeson (FromJSON, ToJSON)
