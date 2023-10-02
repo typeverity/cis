@@ -1,9 +1,6 @@
 import * as cdk from "aws-cdk-lib";
-import { LambdaRestApi, RestApi } from "aws-cdk-lib/aws-apigateway";
-import {
-  CloudFrontWebDistribution,
-  Distribution,
-} from "aws-cdk-lib/aws-cloudfront";
+import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
+import { Distribution } from "aws-cdk-lib/aws-cloudfront";
 import { RestApiOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
