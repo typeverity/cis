@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Aws.Lambda (defaultDispatcherOptions)
+import Aws.Lambda (Handler (StandaloneLambdaHandler), defaultDispatcherOptions)
 import Aws.Lambda.Wai (WaiLambdaProxyType (APIGateway), runWaiAsLambda)
 import Control.Exception (bracket)
 import Data.Aeson (FromJSON, ToJSON)
@@ -41,7 +41,7 @@ itemApi = Proxy
 main :: IO ()
 main = bracket initializeGlobalTracerProvider shutdownTracerProvider $ const do
     otelMW <- newOpenTelemetryWaiMiddleware
-    runWaiAsLambda APIGateway defaultDispatcherOptions "handler" $ fmap otelMW mkApp
+    runWaiAsLambda APIGateway defaultDispatcherOptions "api-gateway" $ fmap otelMW mkApp
 
 mkApp :: IO Application
 mkApp = pure $ serve itemApi server
@@ -49,10 +49,10 @@ mkApp = pure $ serve itemApi server
 server :: Server ItemApi
 server = getItems :<|> getItemById
 
-getItems :: Handler [Item]
+getItems :: Servant.Handler [Item]
 getItems = pure [exampleItem]
 
-getItemById :: Integer -> Handler Item
+getItemById :: Integer -> Servant.Handler Item
 getItemById = \case
     0 -> pure exampleItem
     _ -> throwError err404
