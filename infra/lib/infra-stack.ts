@@ -4,6 +4,9 @@ import { Distribution } from "aws-cdk-lib/aws-cloudfront";
 import { RestApiOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
+  AdotLambdaExecWrapper,
+  AdotLambdaLayerGenericVersion,
+  AdotLayerVersion,
   Architecture,
   DockerImageCode,
   DockerImageFunction,
@@ -16,6 +19,12 @@ export class InfraStack extends cdk.Stack {
 
     const dockerLambda = new DockerImageFunction(this, "DockerLambda", {
       architecture: Architecture.ARM_64,
+      adotInstrumentation: {
+        layerVersion: AdotLayerVersion.fromGenericLayerVersion(
+          AdotLambdaLayerGenericVersion.LATEST
+        ),
+        execWrapper: AdotLambdaExecWrapper.PROXY_HANDLER,
+      },
       code: DockerImageCode.fromImageAsset("..", {
         platform: Platform.LINUX_ARM64,
       }),
