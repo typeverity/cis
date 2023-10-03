@@ -27,14 +27,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up GHC ${{ matrix.ghc-version }}
-        uses: haskell-actions/setup@v2
-        id: setup
-        with:
-          ghc-version: ${{ matrix.ghc-version }}
-          # Defaults, added for clarity:
-          cabal-version: "latest"
-          cabal-update: true
+      - name: set up ghcup
+        id: setup-ghcup
+        run: >
+          curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org |
+            BOOTSTRAP_HASKELL_NONINTERACTIVE=1
+            BOOTSTRAP_HASKELL_MINIMAL=1
+            sh
 
       - name: Get ghcup location
         id: ghcup
@@ -46,6 +45,11 @@ jobs:
         with:
           path: ${{ steps.ghcup.outputs.basedir }}
           key: ${{ runner.os }}-${{ runner.arch }}-ghcup
+
+      - name: install ghc and cabal
+        run: |
+          ghcup install ghc --set ${{ matrix.ghc-version }}
+          ghcup install cabal
 
       - name: Configure the build
         run: |
