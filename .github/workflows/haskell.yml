@@ -30,7 +30,7 @@ jobs:
       - name: Cache .ghcup
         uses: actions/cache@v3
         with:
-          path: /Users/runner/.ghcup
+          path: ~/.ghcup
           key: ${{ runner.os }}-${{ runner.arch }}-ghcup
 
       - name: Set up GHC ${{ matrix.ghc-version }}
