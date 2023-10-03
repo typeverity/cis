@@ -99,5 +99,7 @@ jobs:
           check-latest: true # otherwise we would use the latest locally cached lts version, which might be older than upstream
           cache: npm
           cache-dependency-path: infra/package-lock.json
+      - run: npm install
+        working-directory: infra
       - run: cdk deploy
         working-directory: infra
