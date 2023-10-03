@@ -21,7 +21,7 @@ jobs:
           check-latest: true # otherwise we would use the latest locally cached lts version, which might be older than upstream
           cache: npm
           cache-dependency-path: infra/package-lock.json
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker-practice/actions-setup-docker@master
       - run: npm install
         working-directory: infra
       - run: npm run cdk deploy
