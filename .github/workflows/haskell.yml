@@ -12,13 +12,16 @@ permissions:
 
 jobs:
   build:
-    name: GHC ${{ matrix.ghc-version }} on ${{ matrix.os }}
+    name: ghc-${{ matrix.ghc-version }}/${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os:
           - ubuntu-latest
+          - ubuntu-latest-m
+          - ubuntu-latest-l
+          - ubuntu-latest-xl
           - macos-latest
           - macos-latest-xlarge
         ghc-version:
