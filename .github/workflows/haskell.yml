@@ -23,5 +23,5 @@ jobs:
           cache-dependency-path: infra/package-lock.json
       - run: npm install
         working-directory: infra
-      - run: cdk deploy
+      - run: npm run cdk deploy
         working-directory: infra
