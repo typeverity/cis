@@ -1,9 +1,0 @@
-dist-newstyle/
-.github/
-fourmolu.yaml
-run-jaeger.sh
-Dockerfile
-out/
-.dockerignore
-.gitignore
-infra/

@@ -2,14 +2,14 @@ import * as cdk from "aws-cdk-lib";
 import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
 import { Distribution } from "aws-cdk-lib/aws-cloudfront";
 import { RestApiOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
-import { Platform } from "aws-cdk-lib/aws-ecr-assets";
 import {
   AdotLambdaExecWrapper,
   AdotLambdaLayerGenericVersion,
   AdotLayerVersion,
   Architecture,
-  DockerImageCode,
-  DockerImageFunction,
+  Code,
+  Function,
+  Runtime,
 } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
 
@@ -17,24 +17,38 @@ export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const buildArgs = exec;
-
-    const dockerLambda = new DockerImageFunction(this, "DockerLambda", {
+    const lambda = new Function(this, "Lambda", {
       architecture: Architecture.ARM_64,
+      runtime: Runtime.PROVIDED_AL2,
+      handler: "/cisserver",
       adotInstrumentation: {
         layerVersion: AdotLayerVersion.fromGenericLayerVersion(
           AdotLambdaLayerGenericVersion.LATEST
         ),
         execWrapper: AdotLambdaExecWrapper.PROXY_HANDLER,
       },
-      code: DockerImageCode.fromImageAsset("..", {
-        platform: Platform.LINUX_ARM64,
-        buildArgs,
+      code: Code.fromAsset("..", {
+        bundling: {
+          image: cdk.DockerImage.fromRegistry("haskell:9.6.3"),
+          platform: "linux/arm64",
+          user: "root",
+          command: [
+            "bash",
+            "-c",
+            `{
+              set -e
+              cabal update
+              cabal install cabal-install
+              PATH=~/.cabal/bin:$PATH
+              cabal install cisserver --installdir=/asset-output
+            }`,
+          ],
+        },
       }),
     });
 
     const apiGW = new LambdaRestApi(this, "APIGateway", {
-      handler: dockerLambda,
+      handler: lambda,
     });
 
     const cf = new Distribution(this, "CloudFront", {
