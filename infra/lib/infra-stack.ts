@@ -27,24 +27,7 @@ export class InfraStack extends cdk.Stack {
         ),
         execWrapper: AdotLambdaExecWrapper.PROXY_HANDLER,
       },
-      code: Code.fromAsset("..", {
-        bundling: {
-          image: cdk.DockerImage.fromRegistry("haskell:9.6.3"),
-          platform: "linux/x86_64",
-          user: "root",
-          command: [
-            "bash",
-            "-c",
-            `{
-              set -e
-              cabal update
-              cabal install cabal-install
-              PATH=~/.cabal/bin:$PATH
-              cabal install cisserver --installdir=/asset-output
-            }`,
-          ],
-        },
-      }),
+      code: Code.fromAsset("../out"),
     });
 
     const apiGW = new LambdaRestApi(this, "APIGateway", {
