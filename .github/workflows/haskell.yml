@@ -20,6 +20,7 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
+          - macos-latest-xlarge
         ghc-version:
           - "9.6.3"
 
