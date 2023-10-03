@@ -27,12 +27,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Cache .ghcup
-        uses: actions/cache@v3
-        with:
-          path: ~/.ghcup
-          key: ${{ runner.os }}-${{ runner.arch }}-ghcup
-
       - name: Set up GHC ${{ matrix.ghc-version }}
         uses: haskell-actions/setup@v2
         id: setup
@@ -41,6 +35,17 @@ jobs:
           # Defaults, added for clarity:
           cabal-version: "latest"
           cabal-update: true
+
+      - name: Get ghcup location
+        id: ghcup
+        run: |
+          echo "basedir=$(ghcup whereis basedir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache ghcup
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.ghcup.outputs.basedir }}
+          key: ${{ runner.os }}-${{ runner.arch }}-ghcup
 
       - name: Configure the build
         run: |
