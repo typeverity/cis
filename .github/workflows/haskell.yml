@@ -81,5 +81,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts
+          cache: npm
+          cache-dependency-path: infra/package-lock.json
       - run: cdk deploy
         working-directory: infra
