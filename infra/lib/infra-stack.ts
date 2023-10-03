@@ -17,6 +17,8 @@ export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const buildArgs = exec;
+
     const dockerLambda = new DockerImageFunction(this, "DockerLambda", {
       architecture: Architecture.ARM_64,
       adotInstrumentation: {
@@ -27,6 +29,7 @@ export class InfraStack extends cdk.Stack {
       },
       code: DockerImageCode.fromImageAsset("..", {
         platform: Platform.LINUX_ARM64,
+        buildArgs,
       }),
     });
 

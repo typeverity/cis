@@ -36,11 +36,31 @@ RUN --mount=type=cache,target=dist-newstyle --mount=type=cache,target=/root/.cab
     mkdir /asset/ && \
     cp ~/.cabal/bin/cisserver /asset/
 
+FROM ubuntu:23.10 AS otel-layer
+
+ARG AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-"eu-north-1"}
+ARG AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-""}
+ARG AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-""}
+ENV AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
+RUN apt update && apt install -y curl awscli unzip
+
+RUN mkdir -p /opt
+RUN url=$(aws lambda get-layer-version-by-arn --arn arn:aws:lambda:eu-north-1:029230740929:layer:otel-collector:1 --query 'Content.Location' --output text) && \
+    curl "$url" --output layer.zip && \
+    unzip layer.zip -d /opt && \
+    rm layer.zip
+
 FROM ubuntu:23.10
 
 RUN apt update && apt install -y libffi8 libgmp10 libncurses6 libtinfo6
 
 COPY --from=build /asset/cisserver /asset/
+COPY --from=otel-layer /opt /opt
+RUN ls /
+RUN ls /opt
 
 ENTRYPOINT [ "/asset/cisserver" ]
 CMD ["api-gateway"]
