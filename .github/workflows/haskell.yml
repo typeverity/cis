@@ -18,10 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
-          - ubuntu-latest-m
           - ubuntu-latest-l
-          - ubuntu-latest-xl
           - macos-latest
           - macos-latest-xlarge
         ghc-version:
