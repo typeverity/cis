@@ -27,6 +27,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Cache .ghcup
+        uses: actions/cache@v3
+        with:
+          path: /Users/runner/.ghcup
+          key: ${{ runner.os }}-${{ runner.arch }}-ghcup
+
       - name: Set up GHC ${{ matrix.ghc-version }}
         uses: haskell-actions/setup@v2
         id: setup
