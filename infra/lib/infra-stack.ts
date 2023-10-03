@@ -18,7 +18,7 @@ export class InfraStack extends cdk.Stack {
     super(scope, id, props);
 
     const lambda = new Function(this, "Lambda", {
-      architecture: Architecture.ARM_64,
+      architecture: Architecture.X86_64,
       runtime: Runtime.PROVIDED_AL2,
       handler: "/cisserver",
       adotInstrumentation: {
@@ -30,7 +30,7 @@ export class InfraStack extends cdk.Stack {
       code: Code.fromAsset("..", {
         bundling: {
           image: cdk.DockerImage.fromRegistry("haskell:9.6.3"),
-          platform: "linux/arm64",
+          platform: "linux/x86_64",
           user: "root",
           command: [
             "bash",
