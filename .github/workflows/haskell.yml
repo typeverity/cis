@@ -78,7 +78,7 @@ jobs:
       - name: Install dependencies
         run: >
           docker run --user glenda --rm -v ~/.cabal:/home/glenda/.cabal -v $PWD:/app -w /app ghcr.io/typeverity/ghc-base:latest
-          sh -c 'cabal build all --only-dependencies'
+          cabal build all --only-dependencies
 
       # Cache dependencies already here, so that we do not have to rebuild them should the subsequent steps fail.
       - name: Save cached dependencies
