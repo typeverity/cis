@@ -61,7 +61,7 @@ jobs:
           key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - run: |
-          cabal install cisserver --installdir=out
+          cabal install cisserver --installdir=out --enable-executable-static
           rm -f out/cisclient
           mv out/cisserver out/bootstrap
 
