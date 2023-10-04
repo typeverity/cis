@@ -91,6 +91,7 @@ jobs:
             cabal install cisserver --installdir=out --enable-executable-static --overwrite-policy=always
           echo "anyone there?"
           ls -l out
+          file out/cisserver
           rm -f out/cisclient
           mv $(realpath out/cisserver) out/bootstrap
           rm -f out/cisserver
