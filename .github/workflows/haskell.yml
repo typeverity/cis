@@ -14,6 +14,9 @@ permissions:
 jobs:
   build-base:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
+    permissions:
+      packages: write
+      contents: read
     steps:
       - run: |
           echo "uid=$(id -u)" >> "$GITHUB_OUTPUT"
