@@ -6,6 +6,7 @@ import Control.Exception (bracket)
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics (Generic)
 import Network.Wai (Application)
+import OpenTelemetry.AWSXRay
 import OpenTelemetry.Instrumentation.Wai (newOpenTelemetryWaiMiddleware)
 import OpenTelemetry.Trace
     ( initializeGlobalTracerProvider

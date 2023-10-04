@@ -34,6 +34,7 @@ executable cisserver
     , aws-lambda-haskell-runtime-wai
     , cis
     , envy
+    , hs-opentelemetry-awsxray
     , hs-opentelemetry-instrumentation-wai
     , hs-opentelemetry-sdk
     , servant

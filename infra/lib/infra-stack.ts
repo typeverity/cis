@@ -27,6 +27,10 @@ export class InfraStack extends cdk.Stack {
         ),
         execWrapper: AdotLambdaExecWrapper.PROXY_HANDLER,
       },
+      environment: {
+        OTEL_SERVICE_NAME: "cisserver",
+        OTEL_PROPAGATORS: "tracecontext,baggage,awsxray",
+      },
       code: Code.fromAsset("../out"),
     });
 
