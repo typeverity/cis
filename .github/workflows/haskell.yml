@@ -68,6 +68,7 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-north-1
+          role-to-assume: arn:aws:iam::029230740929:role/GitHubDeploymentRole
 
       - run: npm run cdk deploy
         working-directory: infra
