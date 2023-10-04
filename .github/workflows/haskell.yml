@@ -65,6 +65,7 @@ jobs:
           rm -f out/cisclient
           mv out/cisserver out/bootstrap
           file -L out/bootstrap
+          ldd out/bootstrap
 
       - run: npm ci
         working-directory: infra
