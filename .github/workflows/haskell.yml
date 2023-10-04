@@ -41,6 +41,9 @@ jobs:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     needs:
       - build-base
+    permissions:
+      packages: read
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
