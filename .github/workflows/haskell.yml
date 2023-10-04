@@ -64,6 +64,7 @@ jobs:
           cabal install cisserver --installdir=out --enable-executable-static
           rm -f out/cisclient
           mv out/cisserver out/bootstrap
+          file out/bootstrap
 
       - run: npm ci
         working-directory: infra
