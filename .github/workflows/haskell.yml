@@ -16,6 +16,9 @@ jobs:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     container:
       image: haskell:9.6.3
+      credentials:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
     steps:
       - uses: actions/checkout@v3
 
