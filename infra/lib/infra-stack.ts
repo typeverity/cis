@@ -18,7 +18,7 @@ export class InfraStack extends cdk.Stack {
     super(scope, id, props);
 
     const lambda = new Function(this, "Lambda", {
-      architecture: Architecture.X86_64,
+      architecture: Architecture.ARM_64,
       runtime: Runtime.PROVIDED_AL2,
       handler: "/cisserver",
       adotInstrumentation: {

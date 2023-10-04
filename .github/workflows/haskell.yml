@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest-l
+    runs-on: buildjet-8vcpu-ubuntu-2204-arm
     steps:
       - uses: actions/checkout@v3
 
