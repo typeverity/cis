@@ -27,12 +27,12 @@ jobs:
 
       - name: Initialize cabal
         run: >
-          docker run --rm -v ~/.cabal/store:~/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3
+          docker run --rm -v ~/.cabal/store:/root/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3
           cabal update
 
       - name: Configure the build
         run: >
-          docker run --rm -v ~/.cabal/store:~/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3
+          docker run --rm -v ~/.cabal/store:/root/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3
           sh -c 'cabal configure --enable-tests --enable-benchmarks --disable-documentation && cabal build --dry-run'
         # The last step generates dist-newstyle/cache/plan.json for the cache key.
 
@@ -48,7 +48,7 @@ jobs:
 
       - name: Install dependencies
         run: >
-          docker run --rm -v ~/.cabal/store:~/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3
+          docker run --rm -v ~/.cabal/store:/root/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3
           cabal build all --only-dependencies
 
       # Cache dependencies already here, so that we do not have to rebuild them should the subsequent steps fail.
@@ -61,7 +61,7 @@ jobs:
           key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - run: |
-          docker run --rm -v ~/.cabal/store:~/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3 \
+          docker run --rm -v ~/.cabal/store:/root/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3 \
             sh -c 'cabal update && cabal install cisserver --installdir=out --enable-executable-static --overwrite-policy=always'
           rm -f out/cisclient
           mv out/cisserver out/bootstrap
