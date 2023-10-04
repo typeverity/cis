@@ -2,16 +2,19 @@ module Main (main) where
 
 import Aws.Lambda (defaultDispatcherOptions)
 import Aws.Lambda.Wai (WaiLambdaProxyType (APIGateway), runWaiAsLambda)
-import Control.Exception (bracket)
 import Data.Aeson (FromJSON, ToJSON)
 import GHC.Generics (Generic)
 import Network.Wai (Application)
 import OpenTelemetry.AWSXRay
+    ( awsXRayContextPropagator
+    , awsXRayIdGenerator
+    )
 import OpenTelemetry.Instrumentation.Wai (newOpenTelemetryWaiMiddleware)
 import OpenTelemetry.Trace
-    ( initializeGlobalTracerProvider
-    , shutdownTracerProvider
+    ( TracerProviderOptions (tracerProviderOptionsIdGenerator)
+    , tracerProviderOptionsPropagators
     )
+import OpenTelemetry.Trace.Setup (withTracerProvider)
 import Servant
     ( Capture
     , Get
@@ -40,9 +43,16 @@ itemApi :: Proxy ItemApi
 itemApi = Proxy
 
 main :: IO ()
-main = bracket initializeGlobalTracerProvider shutdownTracerProvider $ const do
+main = withTracerProvider addXRayPropagator $ const do
     otelMW <- newOpenTelemetryWaiMiddleware
     runWaiAsLambda APIGateway defaultDispatcherOptions "api-gateway" $ fmap otelMW mkApp
+
+addXRayPropagator :: TracerProviderOptions -> TracerProviderOptions
+addXRayPropagator opts =
+    opts
+        { tracerProviderOptionsIdGenerator = awsXRayIdGenerator
+        , tracerProviderOptionsPropagators = opts.tracerProviderOptionsPropagators <> awsXRayContextPropagator
+        }
 
 mkApp :: IO Application
 mkApp = pure $ serve itemApi server
