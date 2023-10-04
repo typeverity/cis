@@ -15,7 +15,7 @@ jobs:
   deploy:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     container:
-      image: haskell:9.6.3
+      image: glcr.b-data.ch/ghc/ghc-musl:9.6.3
       credentials:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_PASSWORD }}
@@ -49,7 +49,7 @@ jobs:
           restore-keys: ${{ env.key }}-
 
       - name: Install dependencies
-        run: cabal build all --only-dependencies --enable-static
+        run: cabal build all --only-dependencies
 
       # Cache dependencies already here, so that we do not have to rebuild them should the subsequent steps fail.
       - name: Save cached dependencies
