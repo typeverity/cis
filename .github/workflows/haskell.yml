@@ -45,6 +45,9 @@ jobs:
           key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
           restore-keys: ${{ env.key }}-
 
+      - name: Initialize cabal
+        run: cabal update
+
       - name: Install dependencies
         run: cabal build all --only-dependencies
 
