@@ -88,9 +88,7 @@ jobs:
 
       - run: |
           docker run --user glenda --rm -v ~/.cabal:/home/glenda/.cabal -v $PWD:/app -w /app ghcr.io/typeverity/ghc-base:latest \
-            cabal build cisserver --enable-executable-static
-          mkdir -p out
-          cp $(cabal list-bin cisserver) out/bootstrap
+            sh -c 'cabal build cisserver --enable-executable-static && cp $(cabal list-bin cisserver) out/bootstrap'
 
       - run: npm ci
         working-directory: infra
