@@ -55,6 +55,7 @@ jobs:
 
       - name: Initialize cabal
         run: >
+          id && ls -ld ~/.cabal &&
           docker run --user glenda --rm -v ~/.cabal:/home/glenda/.cabal -v $PWD:/app -w /app ghcr.io/typeverity/ghc-base:latest
           cabal update
 
