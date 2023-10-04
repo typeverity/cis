@@ -15,10 +15,6 @@ jobs:
   deploy:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     container:
-      image: glcr.b-data.ch/ghc/ghc-musl:9.6.3
-      credentials:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -30,12 +26,14 @@ jobs:
           cache-dependency-path: infra/package-lock.json
 
       - name: Initialize cabal
-        run: cabal update
+        run: >
+          docker run --rm -v ~/.cabal/store:~/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3
+          cabal update
 
       - name: Configure the build
-        run: |
-          cabal configure --enable-tests --enable-benchmarks --disable-documentation
-          cabal build --dry-run
+        run: >
+          docker run --rm -v ~/.cabal/store:~/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3
+          sh -c 'cabal configure --enable-tests --enable-benchmarks --disable-documentation && cabal build --dry-run'
         # The last step generates dist-newstyle/cache/plan.json for the cache key.
 
       - name: Restore cached dependencies
@@ -49,7 +47,9 @@ jobs:
           restore-keys: ${{ env.key }}-
 
       - name: Install dependencies
-        run: cabal build all --only-dependencies
+        run: >
+          docker run --rm -v ~/.cabal/store:~/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3
+          cabal build all --only-dependencies
 
       # Cache dependencies already here, so that we do not have to rebuild them should the subsequent steps fail.
       - name: Save cached dependencies
@@ -61,7 +61,8 @@ jobs:
           key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - run: |
-          cabal install cisserver --installdir=out --enable-executable-static
+          docker run --rm -v ~/.cabal/store:~/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3 \
+            sh -c 'cabal update && cabal install cisserver --installdir=out --enable-executable-static --overwrite-policy=always'
           rm -f out/cisclient
           mv out/cisserver out/bootstrap
           file -L out/bootstrap

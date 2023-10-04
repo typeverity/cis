@@ -21,7 +21,7 @@ common settings
 
 common dependencies
   build-depends:
-    , base  ^>=4.18.0.0
+    , base
     , text
 
 executable cisserver
