@@ -88,13 +88,9 @@ jobs:
 
       - run: |
           docker run --user glenda --rm -v ~/.cabal:/home/glenda/.cabal -v $PWD:/app -w /app ghcr.io/typeverity/ghc-base:latest \
-            cabal install cisserver --installdir=out --enable-executable-static --overwrite-policy=always
-          echo "anyone there?"
-          ls -l out
-          file out/cisserver
-          rm -f out/cisclient
-          mv $(realpath out/cisserver) out/bootstrap
-          rm -f out/cisserver
+            cabal build cisserver --enable-executable-static
+          mkdir -p out
+          cp $(cabal list-bin cisserver) out/bootstrap
 
       - run: npm ci
         working-directory: infra
