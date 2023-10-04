@@ -18,13 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: buildjet/setup-node@v3
-        with:
-          node-version: lts/*
-          #check-latest: true # otherwise we would use the latest locally cached lts version, which might be older than upstream
-          cache: npm
-          cache-dependency-path: infra/package-lock.json
-
       - name: Initialize cabal
         run: >
           docker run --rm -v ~/.cabal/store:/root/.cabal/store -v $PWD:/app -w /app glcr.b-data.ch/ghc/ghc-musl:9.6.3
