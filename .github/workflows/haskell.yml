@@ -25,6 +25,7 @@ jobs:
           cache-dependency-path: infra/package-lock.json
 
       - uses: haskell/actions/setup@v2
+        id: setup-haskell
         with:
           ghc-version: "9.6.3"
 
@@ -38,9 +39,9 @@ jobs:
         uses: actions/cache/restore@v3
         id: cache
         env:
-          key: ${{ runner.os }}-${{ runner.arch }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
+          key: ${{ runner.os }}-${{ runner.arch }}-ghc-${{ steps.setup-haskell.outputs.ghc-version }}-cabal-${{ steps.setup-haskell.outputs.cabal-version }}
         with:
-          path: ${{ steps.setup.outputs.cabal-store }}
+          path: ${{ steps.setup-haskell.outputs.cabal-store }}
           key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
           restore-keys: ${{ env.key }}-
 
@@ -53,7 +54,7 @@ jobs:
         # Caches are immutable, trying to save with the same key would error.
         if: ${{ steps.cache.outputs.cache-primary-key != steps.cache.outputs.cache-matched-key }}
         with:
-          path: ${{ steps.setup.outputs.cabal-store }}
+          path: ${{ steps.setup-haskell.outputs.cabal-store }}
           key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - run: cabal install cisserver --installdir=out
