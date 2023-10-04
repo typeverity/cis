@@ -70,5 +70,5 @@ jobs:
           aws-region: eu-north-1
           role-to-assume: arn:aws:iam::029230740929:role/GitHubDeploymentRole
 
-      - run: npm run cdk deploy --require-approval=never
+      - run: npm run cdk deploy -- --require-approval=never
         working-directory: infra
