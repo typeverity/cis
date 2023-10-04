@@ -18,6 +18,7 @@ jobs:
       - run: |
           echo "uid=$(id -u)" >> "$GITHUB_OUTPUT"
         id: uid
+      - uses: docker/setup-buildx-action@v3
       - uses: docker/build-push-action@v5
         with:
           file: ghc.Dockerfile
