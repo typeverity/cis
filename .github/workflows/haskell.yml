@@ -29,6 +29,9 @@ jobs:
           cache: npm
           cache-dependency-path: infra/package-lock.json
 
+      - name: Initialize cabal
+        run: cabal update
+
       - name: Configure the build
         run: |
           cabal configure --enable-tests --enable-benchmarks --disable-documentation
@@ -44,9 +47,6 @@ jobs:
           path: ~/.cabal/store
           key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
           restore-keys: ${{ env.key }}-
-
-      - name: Initialize cabal
-        run: cabal update
 
       - name: Install dependencies
         run: cabal build all --only-dependencies
