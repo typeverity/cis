@@ -36,6 +36,7 @@ export class InfraStack extends cdk.Stack {
 
     const apiGW = new LambdaRestApi(this, "APIGateway", {
       handler: lambda,
+      deployOptions: { tracingEnabled: true },
     });
 
     const cf = new Distribution(this, "CloudFront", {
