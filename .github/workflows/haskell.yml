@@ -60,7 +60,10 @@ jobs:
           path: ~/.cabal/store
           key: ${{ steps.cache.outputs.cache-primary-key }}
 
-      - run: cabal install cisserver --installdir=out
+      - run: |
+          cabal install cisserver --installdir=out
+          rm -f out/cisclient
+          mv out/cisserver out/bootstrap
 
       - run: npm ci
         working-directory: infra
