@@ -62,7 +62,7 @@ jobs:
 
       - run: cabal install cisserver --installdir=out
 
-      - run: npm install
+      - run: npm ci
         working-directory: infra
 
       - uses: aws-actions/configure-aws-credentials@v4
