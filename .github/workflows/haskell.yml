@@ -29,11 +29,6 @@ jobs:
           cache: npm
           cache-dependency-path: infra/package-lock.json
 
-      - uses: haskell-actions/setup@v2
-        id: setup-haskell
-        with:
-          ghc-version: "9.6.3"
-
       - name: Configure the build
         run: |
           cabal configure --enable-tests --enable-benchmarks --disable-documentation
