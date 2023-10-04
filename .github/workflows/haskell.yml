@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   deploy:
@@ -59,6 +60,10 @@ jobs:
 
       - run: npm install
         working-directory: infra
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-north-1
 
       - run: npm run cdk deploy
         working-directory: infra
