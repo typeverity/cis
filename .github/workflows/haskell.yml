@@ -14,6 +14,8 @@ permissions:
 jobs:
   deploy:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
+    container:
+      image: haskell:9.6.3
     steps:
       - uses: actions/checkout@v3
 
