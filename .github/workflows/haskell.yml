@@ -39,9 +39,9 @@ jobs:
         uses: buildjet/cache/restore@v3
         id: cache
         env:
-          key: ${{ runner.os }}-${{ runner.arch }}-ghc-${{ steps.setup-haskell.outputs.ghc-version }}-cabal-${{ steps.setup-haskell.outputs.cabal-version }}
+          key: ${{ runner.os }}-${{ runner.arch }}-ghc-9.6.3
         with:
-          path: ${{ steps.setup-haskell.outputs.cabal-store }}
+          path: ~/.cabal/store
           key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
           restore-keys: ${{ env.key }}-
 
@@ -54,7 +54,7 @@ jobs:
         # Caches are immutable, trying to save with the same key would error.
         if: ${{ steps.cache.outputs.cache-primary-key != steps.cache.outputs.cache-matched-key }}
         with:
-          path: ${{ steps.setup-haskell.outputs.cabal-store }}
+          path: ~/.cabal/store
           key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - run: cabal install cisserver --installdir=out
