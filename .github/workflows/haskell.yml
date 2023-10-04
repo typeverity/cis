@@ -71,7 +71,7 @@ jobs:
         env:
           key: ${{ runner.os }}-${{ runner.arch }}-ghc-9.6.3
         with:
-          path: ~/.cabal/store
+          path: ~/.cabal
           key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
           restore-keys: ${{ env.key }}-
 
@@ -86,7 +86,7 @@ jobs:
         # Caches are immutable, trying to save with the same key would error.
         if: ${{ steps.cache.outputs.cache-primary-key != steps.cache.outputs.cache-matched-key }}
         with:
-          path: ~/.cabal/store
+          path: ~/.cabal
           key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - run: |
