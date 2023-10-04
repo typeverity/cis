@@ -49,7 +49,7 @@ jobs:
           restore-keys: ${{ env.key }}-
 
       - name: Install dependencies
-        run: cabal build all --only-dependencies
+        run: cabal build all --only-dependencies --enable-static
 
       # Cache dependencies already here, so that we do not have to rebuild them should the subsequent steps fail.
       - name: Save cached dependencies
