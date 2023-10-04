@@ -1,2 +1,3 @@
 packages: .
 allow-newer: safe-exceptions-checked:transformers
+executable-static: True
