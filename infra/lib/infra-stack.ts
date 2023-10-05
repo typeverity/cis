@@ -12,11 +12,20 @@ import {
   Function,
   Runtime,
 } from "aws-cdk-lib/aws-lambda";
+import {
+  ARecord,
+  AaaaRecord,
+  IHostedZone,
+  PublicHostedZone,
+  RecordTarget,
+} from "aws-cdk-lib/aws-route53";
+import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
 import { Construct } from "constructs";
 
 export interface InfraStackProps extends cdk.StackProps {
   domainNames: string[];
   certificate: ICertificate;
+  hostedZone: IHostedZone;
 }
 
 export class InfraStack extends cdk.Stack {
@@ -54,6 +63,16 @@ export class InfraStack extends cdk.Stack {
       },
       certificate: props.certificate,
       domainNames: props.domainNames,
+    });
+
+    new ARecord(this, "ARecord", {
+      target: RecordTarget.fromAlias(new CloudFrontTarget(this.cf)),
+      zone: props.hostedZone,
+    });
+
+    new AaaaRecord(this, "AaaaRecord", {
+      target: RecordTarget.fromAlias(new CloudFrontTarget(this.cf)),
+      zone: props.hostedZone,
     });
   }
 }
