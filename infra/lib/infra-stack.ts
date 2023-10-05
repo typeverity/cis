@@ -65,14 +65,19 @@ export class InfraStack extends cdk.Stack {
       domainNames: props.domainNames,
     });
 
-    new ARecord(this, "ARecord", {
-      target: RecordTarget.fromAlias(new CloudFrontTarget(this.cf)),
-      zone: props.hostedZone,
-    });
+    const cfTarget = RecordTarget.fromAlias(new CloudFrontTarget(this.cf));
 
-    new AaaaRecord(this, "AaaaRecord", {
-      target: RecordTarget.fromAlias(new CloudFrontTarget(this.cf)),
-      zone: props.hostedZone,
-    });
+    for (const domain of props.domainNames) {
+      new ARecord(this, `ARecord`, {
+        target: cfTarget,
+        zone: props.hostedZone,
+        recordName: domain,
+      });
+      new AaaaRecord(this, `AaaaRecord${domain}`, {
+        target: cfTarget,
+        zone: props.hostedZone,
+        recordName: domain,
+      });
+    }
   }
 }
