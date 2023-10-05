@@ -1,7 +1,7 @@
 import * as cdk from "aws-cdk-lib";
 import { EndpointType, LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
 import { ICertificate } from "aws-cdk-lib/aws-certificatemanager";
-import { Distribution } from "aws-cdk-lib/aws-cloudfront";
+import { Distribution, IDistribution } from "aws-cdk-lib/aws-cloudfront";
 import { RestApiOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import {
   AdotLambdaExecWrapper,
@@ -12,13 +12,6 @@ import {
   Function,
   Runtime,
 } from "aws-cdk-lib/aws-lambda";
-import {
-  ARecord,
-  AaaaRecord,
-  HostedZone,
-  RecordTarget,
-} from "aws-cdk-lib/aws-route53";
-import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
 import { Construct } from "constructs";
 
 export interface InfraStackProps extends cdk.StackProps {
@@ -27,6 +20,8 @@ export interface InfraStackProps extends cdk.StackProps {
 }
 
 export class InfraStack extends cdk.Stack {
+  cf: IDistribution;
+
   constructor(scope: Construct, id: string, props: InfraStackProps) {
     super(scope, id, props);
 
@@ -53,34 +48,12 @@ export class InfraStack extends cdk.Stack {
       endpointTypes: [EndpointType.REGIONAL],
     });
 
-    const cf = new Distribution(this, "CloudFront", {
+    this.cf = new Distribution(this, "CloudFront", {
       defaultBehavior: {
         origin: new RestApiOrigin(apiGW),
       },
       certificate: props.certificate,
       domainNames: props.domainNames,
-    });
-
-    const hostedZone = HostedZone.fromLookup(this, "HostedZone", {
-      domainName: props.domainNames[0],
-    });
-
-    new ARecord(this, "ARecord", {
-      target: RecordTarget.fromAlias(new CloudFrontTarget(cf)),
-      zone: hostedZone,
-    });
-
-    new AaaaRecord(this, "AaaaRecord", {
-      target: RecordTarget.fromAlias(new CloudFrontTarget(cf)),
-      zone: hostedZone,
-    });
-
-    new cdk.CfnOutput(this, "CloudFrontDistributionDomainName", {
-      value: cf.distributionDomainName,
-    });
-
-    new cdk.CfnOutput(this, "CloudFrontDomainName", {
-      value: cf.domainName,
     });
   }
 }
