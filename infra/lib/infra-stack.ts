@@ -1,5 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
+import { ICertificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Distribution } from "aws-cdk-lib/aws-cloudfront";
 import { RestApiOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import {
@@ -13,8 +14,13 @@ import {
 } from "aws-cdk-lib/aws-lambda";
 import { Construct } from "constructs";
 
+export interface InfraStackProps extends cdk.StackProps {
+  domainNames: string[];
+  certificate: ICertificate;
+}
+
 export class InfraStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: InfraStackProps) {
     super(scope, id, props);
 
     const lambda = new Function(this, "Lambda", {
@@ -43,6 +49,8 @@ export class InfraStack extends cdk.Stack {
       defaultBehavior: {
         origin: new RestApiOrigin(apiGW),
       },
+      certificate: props.certificate,
+      domainNames: props.domainNames,
     });
 
     new cdk.CfnOutput(this, "CloudFrontDistributionDomainName", {
