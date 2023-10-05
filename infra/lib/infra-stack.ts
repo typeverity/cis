@@ -52,18 +52,6 @@ export class InfraStack extends cdk.Stack {
       handler: lambda,
       deployOptions: { tracingEnabled: true },
       endpointTypes: [EndpointType.REGIONAL],
-      policy: new PolicyDocument({
-        statements: [
-          new PolicyStatement({
-            effect: Effect.ALLOW,
-            actions: ["execute-api:Invoke"],
-            principals: [new AnyPrincipal()],
-            conditions: {
-              IpAddress: { "aws:SourceIp": Peer.prefixList("pl-4fa04526") },
-            },
-          }),
-        ],
-      }),
     });
 
     const cf = new Distribution(this, "CloudFront", {
