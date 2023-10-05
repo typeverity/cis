@@ -3,14 +3,6 @@ import { EndpointType, LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
 import { ICertificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Distribution } from "aws-cdk-lib/aws-cloudfront";
 import { RestApiOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
-import { Peer } from "aws-cdk-lib/aws-ec2";
-import {
-  AnyPrincipal,
-  Effect,
-  Policy,
-  PolicyDocument,
-  PolicyStatement,
-} from "aws-cdk-lib/aws-iam";
 import {
   AdotLambdaExecWrapper,
   AdotLambdaLayerGenericVersion,
