@@ -16,7 +16,6 @@ import {
   ARecord,
   AaaaRecord,
   IHostedZone,
-  PublicHostedZone,
   RecordTarget,
 } from "aws-cdk-lib/aws-route53";
 import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
