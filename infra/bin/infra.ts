@@ -16,6 +16,7 @@ const dnsStack = new DnsStack(app, "DnsStack", {
     // We could specify a concrete account here, but there is no real reason to do that. We do need to specify _some_ account, as otherwise CDK gets confused with cross-account references. `CDK_DEFAULT_ACCOUNT` is the account we're deploying to at any given time, so it doesn't tie this stack to any specific account.
     account: process.env.CDK_DEFAULT_ACCOUNT,
   },
+  // This makes it magically possible for our InfraStack below to refer to values from this stack.
   crossRegionReferences: true,
   domainNames: [appDomain],
 });
@@ -28,8 +29,12 @@ new InfraStack(app, "InfraStack", {
     // As above, we need to specify _some_ account here, otherwise CDK gets confused. This is us saying "it's fine, don't worry" to CDK.
     account: process.env.CDK_DEFAULT_ACCOUNT,
   },
+  // We need to enable cross region references in this stack as well to be able to refer to values in DnsStack.
   crossRegionReferences: true,
+  // CloudFront will use this certificate.
   certificate: dnsStack.certificate,
+  // CloudFront will use these domain names, and we will create A and AAAA DNS records for these that point to CloudFront.
   domainNames: dnsStack.domainNames,
+  // This is the hosted zone where the above records will be created.
   hostedZone: dnsStack.hostedZone,
 });
