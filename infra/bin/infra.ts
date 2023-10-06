@@ -18,6 +18,7 @@ const dnsStack = new DnsStack(app, "DnsStack", {
   },
   // This makes it magically possible for our InfraStack below to refer to values from this stack.
   crossRegionReferences: true,
+  // These are the domain names we want to create a certificate for. We only need one here, but certificates support multiple domain names, so this property is more general than we actually need.
   domainNames: [appDomain],
 });
 

@@ -36,7 +36,7 @@ export class InfraStack extends cdk.Stack {
     const lambda = new Function(this, "Lambda", {
       architecture: Architecture.ARM_64,
       runtime: Runtime.PROVIDED_AL2,
-      handler: "api-gateway",
+      handler: "api-gateway", // this has to be the same as the name given in ../server/Main.hs to `runWaiAsLambda`.
       adotInstrumentation: {
         layerVersion: AdotLayerVersion.fromGenericLayerVersion(
           AdotLambdaLayerGenericVersion.LATEST
@@ -45,14 +45,16 @@ export class InfraStack extends cdk.Stack {
       },
       environment: {
         OTEL_SERVICE_NAME: "cisserver",
-        OTEL_PROPAGATORS: "tracecontext,baggage,awsxray",
+        OTEL_PROPAGATORS: "tracecontext,baggage,awsxray", // Adding awsxray here doesn't actually work, cf. https://github.com/iand675/hs-opentelemetry/issues/59. We work around this by explicitly adding the propagator in our Main.hs file. TODO: check if we actually need this propagator at all, or does the Lambda instrumentation layer handle this for us?
       },
+      // This is what we deploy. We assume that the Lambda binary has already been built. Everything in ../out will be zipped and deployed as our Lambda. The directory should have a binary named `bootstrap`, which Lambda will call for incoming requests. It can contain other files as well.
       code: Code.fromAsset("../out"),
     });
 
     const apiGW = new LambdaRestApi(this, "APIGateway", {
       handler: lambda,
       deployOptions: { tracingEnabled: true },
+      // Since we're using CloudFront in front of our API Gateway, it makes architecturally more sense to use regional endpoints here, instead of edge endpoints, since CF already caches at the edge.
       endpointTypes: [EndpointType.REGIONAL],
     });
 
