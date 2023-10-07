@@ -54,7 +54,7 @@ export class InfraStack extends cdk.Stack {
     const apiGW = new LambdaRestApi(this, "APIGateway", {
       handler: lambda,
       deployOptions: { tracingEnabled: true },
-      // Since we're using CloudFront in front of our API Gateway, it makes architecturally more sense to use regional endpoints here, instead of edge endpoints, since CF already caches at the edge.
+      // Since we're using CloudFront in front of our API Gateway, it makes architecturally more sense to use regional endpoints here, instead of edge endpoints, since CF already caches at the edge. If we didn't use CloudFront we could use edge Lambdas and enable their own cache. That cache has a hourly cost though, unlike CloudFront, which is purely billed on data transfer and request count.
       endpointTypes: [EndpointType.REGIONAL],
     });
 
