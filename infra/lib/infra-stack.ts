@@ -37,10 +37,13 @@ export class InfraStack extends cdk.Stack {
       architecture: Architecture.ARM_64,
       runtime: Runtime.PROVIDED_AL2,
       handler: "api-gateway", // this has to be the same as the name given in ../server/Main.hs to `runWaiAsLambda`.
+      // We want to see execution traces of our Lambda so we can drill down into the code when something goes wrong. There are two ways of instrumenting Lambdas: Xray and OpenTelemetry (or otel for short). Xray is a vendor (AWS) specific protocol. Otel is a standard that anyone can implement. Using otel means that, in addition to CloudWatch, we can send our tracing data to Honeycomb or Datadog instead. AWS graciously provides a ready-made Lambda layer for otel instrumentation called ADOT (AWS Distro for OpenTelemetry) and we can configure it directly in CDK/CloudFormation.
       adotInstrumentation: {
         layerVersion: AdotLayerVersion.fromGenericLayerVersion(
+          // Using LATEST here might be a bad idea, since any deployment is no longer idempotent.
           AdotLambdaLayerGenericVersion.LATEST
         ),
+        // Our Lambda only understands AWS API Gateway Proxy requests, so we need to tell that to the ADOT instrumentation, which hooks into the request processing pipeline and so needs to know what kind of requests to expect.
         execWrapper: AdotLambdaExecWrapper.PROXY_HANDLER,
       },
       environment: {
