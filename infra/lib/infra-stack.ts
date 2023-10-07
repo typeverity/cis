@@ -54,8 +54,10 @@ export class InfraStack extends cdk.Stack {
       code: Code.fromAsset("../out"),
     });
 
+    // We create an API Gateway here because our code only understands API Gateway Proxy requests. If our code understood other types of requests (like normal, unwrapped HTTP requests), we could also skip the API Gateway completely and use Lambda function URLs instead as our CloudFront target.
     const apiGW = new LambdaRestApi(this, "APIGateway", {
       handler: lambda,
+      // We need to tell API Gateway that we want tracing so we see the path of an individual request from the gateway to Lambda.
       deployOptions: { tracingEnabled: true },
       // Since we're using CloudFront in front of our API Gateway, it makes architecturally more sense to use regional endpoints here, instead of edge endpoints, since CF already caches at the edge. If we didn't use CloudFront we could use edge Lambdas and enable their own cache. That cache has a hourly cost though, unlike CloudFront, which is purely billed on data transfer and request count.
       endpointTypes: [EndpointType.REGIONAL],
