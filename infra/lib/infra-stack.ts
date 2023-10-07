@@ -63,6 +63,7 @@ export class InfraStack extends cdk.Stack {
       endpointTypes: [EndpointType.REGIONAL],
     });
 
+    // We want our users to actually call our Lambda as little as possible, as that will lessen costs both in Lambda availability and cost. We use CloudFront to cache as much as possible so very few requests actually hit the Lambda. We'll need to configure the behavior more here if we have users or other cookie or header based behaviours which mean that we can't just blindly cache based on the URL alone (since the resulting response might be different for each user, and we don't want to show another user's page to any other user).
     this.cf = new Distribution(this, "CloudFront", {
       defaultBehavior: {
         origin: new RestApiOrigin(apiGW),
