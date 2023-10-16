@@ -37,10 +37,14 @@ type ItemApi
     :<|> "item" :> Capture "itemId" Integer
                 :> Get '[JSON] Item
 
+type RootApi = Get '[JSON] String
+
+type FullApi = RootApi :<|> ItemApi
+
 {- FOURMOLU_ENABLE -}
 
-itemApi :: Proxy ItemApi
-itemApi = Proxy
+fullApi :: Proxy FullApi
+fullApi = Proxy
 
 main :: IO ()
 main = withTracerProvider addXRayPropagator $ const do
@@ -55,10 +59,13 @@ addXRayPropagator opts =
         }
 
 mkApp :: IO Application
-mkApp = pure $ serve itemApi server
+mkApp = pure $ serve fullApi server
 
-server :: Server ItemApi
-server = getItems :<|> getItemById
+server :: Server FullApi
+server = getRootPage :<|> getItems :<|> getItemById
+
+getRootPage :: Servant.Handler String
+getRootPage = pure "Hello, world!"
 
 getItems :: Servant.Handler [Item]
 getItems = pure [exampleItem]
