@@ -10,6 +10,7 @@ import {
   Architecture,
   Code,
   Function,
+  LambdaInsightsVersion,
   Runtime,
 } from "aws-cdk-lib/aws-lambda";
 import {
@@ -52,6 +53,7 @@ export class InfraStack extends cdk.Stack {
       },
       // This is what we deploy. We assume that the Lambda binary has already been built. Everything in ../out will be zipped and deployed as our Lambda. The directory should have a binary named `bootstrap`, which Lambda will call for incoming requests. It can contain other files as well.
       code: Code.fromAsset("../out"),
+      insightsVersion: LambdaInsightsVersion.VERSION_1_0_229_0,
     });
 
     // We create an API Gateway here because our code only understands API Gateway Proxy requests. If our code understood other types of requests (like normal, unwrapped HTTP requests), we could also skip the API Gateway completely and use Lambda function URLs instead as our CloudFront target.
