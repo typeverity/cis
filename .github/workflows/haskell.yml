@@ -37,6 +37,7 @@ jobs:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     needs:
       - build-base
+    if: github.ref_name == 'main'
     permissions:
       packages: read
       contents: read
