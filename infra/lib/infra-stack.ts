@@ -53,6 +53,8 @@ export class InfraStack extends cdk.Stack {
       },
       // This is what we deploy. We assume that the Lambda binary has already been built. Everything in ../out will be zipped and deployed as our Lambda. The directory should have a binary named `bootstrap`, which Lambda will call for incoming requests. It can contain other files as well.
       code: Code.fromAsset("../out"),
+      // TODO: document what this is
+      // TODO: add URLs that go directly to the appropriate CloudWatch view
       insightsVersion: LambdaInsightsVersion.VERSION_1_0_229_0,
     });
 
