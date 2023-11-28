@@ -84,7 +84,7 @@ jobs:
       - name: Save cached dependencies
         uses: buildjet/cache/save@v3
         # Caches are immutable, trying to save with the same key would error.
-        if: ${{ steps.cache.outputs.cache-primary-key != steps.cache.outputs.cache-matched-key }}
+        if: steps.cache.outputs.cache-primary-key != steps.cache.outputs.cache-matched-key
         with:
           path: ~/.cabal
           key: ${{ steps.cache.outputs.cache-primary-key }}
