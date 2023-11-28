@@ -109,6 +109,8 @@ jobs:
       name: Production
       url: https://glenda.loveistheplan.net
     steps:
+      - uses: actions/checkout@v4
+
       - uses: buildjet/setup-node@v3
         with:
           cache: npm
