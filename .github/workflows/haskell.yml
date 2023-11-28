@@ -124,7 +124,7 @@ jobs:
           name: cisserver-${{ github.sha }}
           path: out/bootstrap
 
-      - run: ls -l ../out
+      - run: ls -l out
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
