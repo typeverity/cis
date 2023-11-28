@@ -8,33 +8,13 @@ on:
       - main
 
 jobs:
-  cdk:
-    runs-on: buildjet-8vcpu-ubuntu-2204-arm
-    permissions:
-      packages: read
-      contents: read
-      id-token: write
-    environment:
-      name: Production
-      url: https://glenda.loveistheplan.net
+  preview-pr:
+    runs-on: ubuntu-22.04
+    if: github.base_ref == 'main'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          cache: npm
-          cache-dependency-path: infra/package-lock.json
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: eu-north-1
-          role-to-assume: arn:aws:iam::029230740929:role/GitHubDeploymentRole
-      - run: npm ci
-        working-directory: infra
-      - run: npm run cdk diff --all
-        working-directory: infra
-        if: github.ref_name != 'main'
-      - run: npm run cdk -- deploy --all
-        working-directory: infra
-        if: github.ref_name == 'main'
+      - run:
+
   build-base:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     permissions:
@@ -60,12 +40,10 @@ jobs:
           build-args: |
             uid=${{ steps.uid.outputs.uid }}
 
-  deploy:
+  build:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     needs:
       - build-base
-      - cdk
-    if: github.ref_name == 'main'
     permissions:
       packages: read
       contents: read
@@ -122,13 +100,40 @@ jobs:
           docker run --user glenda --rm -v ~/.cabal:/home/glenda/.cabal -v $PWD:/app -w /app ghcr.io/typeverity/ghc-base:latest \
             sh -c 'cabal build cisserver --enable-executable-static && cp $(cabal list-bin cisserver) out/bootstrap'
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: cisserver-${{ github.sha }}
+          path: out/bootstrap
+
+  deploy:
+    runs-on: ubuntu-22.04
+    needs:
+      - build
+    steps:
+      - uses: buildjet/setup-node@v3
+        with:
+          cache: npm
+          cache-dependency-path: infra/package-lock.json
+
       - run: npm ci
         working-directory: infra
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: cisserver-${{ github.sha }}
+          path: out/bootstrap
+
+      - run: ls -l ../out
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-north-1
           role-to-assume: arn:aws:iam::029230740929:role/GitHubDeploymentRole
 
-      - run: ls -l ../out && npm run cdk deploy -- --all --require-approval=never
+      - if: github.ref_name != 'main'
+        run: npm run cdk diff -- --all --require-approval=never
+        working-directory: infra
+
+      - if: github.ref_name == 'main'
+        run: npm run cdk deploy -- --all --require-approval=never
         working-directory: infra
