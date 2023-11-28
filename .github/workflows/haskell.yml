@@ -40,10 +40,6 @@ jobs:
     permissions:
       packages: read
       contents: read
-      id-token: write
-    environment:
-      name: Production
-      url: https://glenda.loveistheplan.net
     steps:
       - uses: actions/checkout@v4
 
@@ -102,6 +98,12 @@ jobs:
     runs-on: ubuntu-22.04
     needs:
       - build
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: Production
+      url: https://glenda.loveistheplan.net
     steps:
       - uses: buildjet/setup-node@v3
         with:
