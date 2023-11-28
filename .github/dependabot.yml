@@ -9,6 +9,11 @@ updates:
     directory: /infra
     schedule:
       interval: weekly
+    groups:
+      cdk:
+        patterns:
+          - aws-cdk
+          - aws-cdk-lib
   - package-ecosystem: docker
     directory: /
     schedule:
