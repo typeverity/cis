@@ -1,0 +1,34 @@
+name: infra
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - infra/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  check-cdk:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: Production
+      url: https://glenda.loveistheplan.net
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: buildjet/setup-node@v3
+        with:
+          cache: npm
+          cache-dependency-path: infra/package-lock.json
+
+      - run: npm ci
+        working-directory: infra
+
+      - run: npm run build
+        working-directory: infra
