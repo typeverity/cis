@@ -1,4 +1,4 @@
-FROM glcr.b-data.ch/ghc/ghc-musl:9.6.3
+FROM glcr.b-data.ch/ghc/ghc-musl:9.8.1
 
 ARG uid=1001
 
