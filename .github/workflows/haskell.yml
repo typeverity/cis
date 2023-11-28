@@ -8,6 +8,33 @@ on:
       - main
 
 jobs:
+  cdk:
+    runs-on: buildjet-8vcpu-ubuntu-2204-arm
+    permissions:
+      packages: read
+      contents: read
+      id-token: write
+    environment:
+      name: Production
+      url: https://glenda.loveistheplan.net
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: infra/package-lock.json
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-north-1
+          role-to-assume: arn:aws:iam::029230740929:role/GitHubDeploymentRole
+      - run: npm ci
+        working-directory: infra
+      - run: npm run cdk diff --all
+        working-directory: infra
+        if: github.ref_name != 'main'
+      - run: npm run cdk deploy
+        working-directory: infra
+        if: github.ref_name == 'main'
   build-base:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     permissions:
@@ -37,6 +64,7 @@ jobs:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     needs:
       - build-base
+      - cdk
     if: github.ref_name == 'main'
     permissions:
       packages: read
