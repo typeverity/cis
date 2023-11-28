@@ -8,13 +8,6 @@ on:
       - main
 
 jobs:
-  preview-pr:
-    runs-on: ubuntu-22.04
-    if: github.base_ref == 'main'
-    steps:
-      - uses: actions/checkout@v4
-      - run:
-
   build-base:
     runs-on: buildjet-8vcpu-ubuntu-2204-arm
     permissions:
