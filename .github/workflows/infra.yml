@@ -16,9 +16,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    environment:
-      name: Production
-      url: https://glenda.loveistheplan.net
     steps:
       - uses: actions/checkout@v4
 
