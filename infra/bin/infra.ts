@@ -9,6 +9,8 @@ const app = new cdk.App();
 const tags = {
   Application: "cisserver",
   Environment: "development",
+  awsApplication:
+    "arn:aws:resource-groups:eu-north-1:029230740929:group/cis/09m98ze4c0x1gs57ncs3s3i5y0",
 };
 
 const appDomain = "glenda.loveistheplan.net";
