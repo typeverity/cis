@@ -95,7 +95,7 @@ jobs:
           docker run --user glenda --rm -v ~/.cabal:/home/glenda/.cabal -v $PWD:/app -w /app ghcr.io/typeverity/ghc-base:latest \
             sh -c 'cabal build cisserver --enable-executable-static && cp $(cabal list-bin cisserver) out/bootstrap'
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: cisserver-${{ github.sha }}
           path: out/bootstrap
