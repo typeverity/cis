@@ -23,9 +23,9 @@ const dnsStack = new DnsStack(app, "DnsStack", {
     // We could specify a concrete account here, but there is no real reason to do that. We do need to specify _some_ account, as otherwise CDK gets confused with cross-account references. `CDK_DEFAULT_ACCOUNT` is the account we're deploying to at any given time, so it doesn't tie this stack to any specific account.
     account: process.env.CDK_DEFAULT_ACCOUNT,
   },
-  // This makes it magically possible for our InfraStack below to refer to values from this stack.
+  // This makes it possible for our InfraStack below to refer to values from this stack. CDK will create Lambda functions and Parameter Store parameters for our exports.
   crossRegionReferences: true,
-  // These are the domain names we want to create a certificate for. We only need one here, but certificates support multiple domain names, so this property is more general than we actually need.
+  // These are the domain names we want to create a certificate for. We only need one here, but certificates support multiple domain names, so this property is a list.
   domainNames: [appDomain],
   tags,
 });
