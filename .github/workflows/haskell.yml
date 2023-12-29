@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: haskell-actions/setup@v2
         with:
-          ghc-version: ${GHC_VERSION}
+          ghc-version: ${{ env.GHC_VERSION }}
       - run: cabal update
       # The last step generates dist-newstyle/cache/plan.json for the cache key.
       - run: cabal configure --enable-tests --enable-benchmarks --disable-documentation && cabal build --dry-run        
@@ -34,7 +34,7 @@ jobs:
         uses: buildjet/cache/restore@v3
         id: cache
         env:
-          key: ${{ runner.os }}-${{ runner.arch }}-ghc-${GHC_VERSION}
+          key: ${{ runner.os }}-${{ runner.arch }}-ghc-${{ env.GHC_VERSION }}
         with:
           path: ~/.cabal
           key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
