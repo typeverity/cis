@@ -17,7 +17,7 @@ env:
   GHC_VERSION: 9.8.1  
 defaults:
   run:
-    shell: /bin/bash
+    shell: bash
 
 jobs:
   build:
