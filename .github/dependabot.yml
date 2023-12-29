@@ -5,6 +5,11 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    groups:
+      artifacts:
+        patterns:
+          - actions/upload-artifact
+          - actions/download-artifact
   - package-ecosystem: npm
     directory: /infra
     schedule:
