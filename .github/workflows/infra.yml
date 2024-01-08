@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: buildjet/setup-node@v3
+      - uses: buildjet/setup-node@v4
         with:
           cache: npm
           cache-dependency-path: infra/package-lock.json
