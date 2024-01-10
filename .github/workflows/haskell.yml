@@ -33,7 +33,7 @@ jobs:
           ghc-version: ${{ env.GHC_VERSION }}
       - run: cabal update
       # The last step generates dist-newstyle/cache/plan.json for the cache key.
-      - run: cabal configure --enable-tests --enable-benchmarks --disable-documentation && cabal build --dry-run        
+      - run: cabal configure --enable-tests --enable-benchmarks --disable-documentation --allow-newer && cabal build --dry-run        
       - name: Restore cached dependencies
         uses: buildjet/cache/restore@v3
         id: cache
