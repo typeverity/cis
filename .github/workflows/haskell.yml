@@ -18,10 +18,20 @@ jobs:
     runs-on: namespace-profile-arm64
     steps:
       - uses: actions/checkout@v4
+      - uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ~/.cabal
+            ~/.local/share/mise
+            ~/.ghcup
+            ~/.npm
+            ./infra/node_modules
       - uses: jdx/mise-action@v2
         with:
           experimental: true
+          cache: false
       - run: |
+          cabal update
           cabal build cisserver --enable-executable-static
           cp $(cabal list-bin cisserver) out/bootstrap
       - uses: actions/upload-artifact@v4
