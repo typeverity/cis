@@ -1,2 +1,2 @@
 packages: .
-allow-newer: safe-exceptions-checked:transformers, base, template-haskell
+allow-newer: *

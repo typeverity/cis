@@ -21,26 +21,26 @@ common settings
 
 common dependencies
   build-depends:
-    , base
-    , text
+    , base  ^>=4.18
+    , text  ^>=2.1
 
 executable cisserver
   import:         warnings, settings, dependencies
   main-is:        Main.hs
   hs-source-dirs: server
   build-depends:
-    , aeson
-    , aws-lambda-haskell-runtime
-    , aws-lambda-haskell-runtime-wai
+    , aeson                                 ^>=2.2
+    , aws-lambda-haskell-runtime            ^>=4.3
+    , aws-lambda-haskell-runtime-wai        ^>=2.0
     , cis
-    , envy
-    , hs-opentelemetry-awsxray
-    , hs-opentelemetry-instrumentation-wai
-    , hs-opentelemetry-sdk
-    , servant
-    , servant-server
-    , transformers
-    , wai
+    , envy                                  ^>=2.1
+    , hs-opentelemetry-awsxray              ^>=0.1
+    , hs-opentelemetry-instrumentation-wai  ^>=0.1
+    , hs-opentelemetry-sdk                  ^>=0.0.3.6
+    , servant                               ^>=0.20
+    , servant-server                        ^>=0.20
+    , transformers                          ^>=0.6
+    , wai                                   ^>=3.2
 
 executable cisclient
   import:         warnings, settings, dependencies

@@ -1,0 +1,4 @@
+[tools]
+ghc = "9.6"
+cabal = "latest"
+hls = "latest"
