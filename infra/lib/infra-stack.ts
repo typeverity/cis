@@ -95,7 +95,7 @@ export class InfraStack extends cdk.Stack {
     });
 
     const alarm = new CfnAlarm(this, "AnomalyDetectorAlarm", {
-      comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
       thresholdMetricId: "e1",
       evaluationPeriods: 3,
       metrics: [
