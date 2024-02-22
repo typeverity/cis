@@ -73,9 +73,13 @@ export class InfraStack extends cdk.Stack {
       insightsVersion: LambdaInsightsVersion.VERSION_1_0_229_0,
     });
 
-    const codedeployApplication = new LambdaApplication(this, "Lambda", {
-      applicationName: "cisserver",
-    });
+    const codedeployApplication = new LambdaApplication(
+      this,
+      "LambdaDeploymentApplication",
+      {
+        applicationName: "cisserver",
+      }
+    );
 
     const alias = new Alias(this, "Prod", {
       aliasName: "prod",
