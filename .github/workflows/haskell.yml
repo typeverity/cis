@@ -38,6 +38,7 @@ jobs:
         with:
           name: cisserver-${{ github.sha }}
           path: out/bootstrap
+          if-no-files-found: error
 
   deploy:
     runs-on: namespace-profile-arm64
@@ -68,7 +69,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: cisserver-${{ github.sha }}
-          path: out/bootstrap
+          path: out/
       - run: ls -l out
       - uses: aws-actions/configure-aws-credentials@v4
         with:
