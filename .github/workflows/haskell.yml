@@ -18,6 +18,9 @@ jobs:
     runs-on: namespace-profile-arm64
     steps:
       - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+        with:
+          experimental: true
       - run: |
           cabal build cisserver --enable-executable-static
           cp $(cabal list-bin cisserver) out/bootstrap
@@ -41,7 +44,6 @@ jobs:
       - uses: jdx/mise-action@v2
         with:
           experimental: true
-          install_dir: infra
       - run: npm ci
         working-directory: infra
       - uses: actions/download-artifact@v4
