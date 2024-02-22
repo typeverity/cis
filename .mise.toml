@@ -1,4 +1,4 @@
 [tools]
-ghc = "9.6"
+ghc = "latest"
 cabal = "latest"
 hls = "latest"

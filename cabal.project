@@ -1,2 +1,13 @@
 packages: .
-allow-newer: *
+allow-newer:
+    , proto-lens:base
+    , proto-lens:bytestring
+    , proto-lens:ghc-prim
+    , proto-lens:deepseq
+    , proto-lens-runtime:base
+    , proto-lens-runtime:deepseq
+    , envy:text
+constraints:
+    , unix +os-string
+    , directory +os-string
+    , filepath ^>=1.4
