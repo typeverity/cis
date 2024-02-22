@@ -4,9 +4,24 @@ import { ICertificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Distribution, IDistribution } from "aws-cdk-lib/aws-cloudfront";
 import { RestApiOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import {
+  Alarm,
+  CfnAlarm,
+  CfnAnomalyDetector,
+  ComparisonOperator,
+  MathExpression,
+  Metric,
+  Stats,
+} from "aws-cdk-lib/aws-cloudwatch";
+import {
+  LambdaApplication,
+  LambdaDeploymentConfig,
+  LambdaDeploymentGroup,
+} from "aws-cdk-lib/aws-codedeploy";
+import {
   AdotLambdaExecWrapper,
   AdotLambdaLayerGenericVersion,
   AdotLayerVersion,
+  Alias,
   Architecture,
   Code,
   Function,
@@ -57,6 +72,68 @@ export class InfraStack extends cdk.Stack {
       // TODO: add URLs that go directly to the appropriate CloudWatch view
       insightsVersion: LambdaInsightsVersion.VERSION_1_0_229_0,
     });
+
+    const codedeployApplication = new LambdaApplication(
+      this,
+      "LambdaDeploymentApplication",
+      {
+        applicationName: "cisserver",
+      }
+    );
+
+    const alias = new Alias(this, "Prod", {
+      aliasName: "prod",
+      version: lambda.currentVersion,
+    });
+
+    const errorsMetric = lambda.metricErrors();
+
+    const anomalyDetector = new CfnAnomalyDetector(this, "AnomalyDetector", {
+      stat: Stats.SUM,
+      namespace: errorsMetric.namespace,
+      metricName: errorsMetric.metricName,
+    });
+
+    const alarm = new CfnAlarm(this, "AnomalyDetectorAlarm", {
+      comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+      thresholdMetricId: "e1",
+      evaluationPeriods: 3,
+      metrics: [
+        {
+          expression: `ANOMALY_DETECTION_BAND(m1, 2)`,
+          id: "e1",
+        },
+        {
+          id: "m1",
+          metricStat: {
+            metric: {
+              namespace: errorsMetric.namespace,
+              metricName: errorsMetric.metricName,
+            },
+            period: cdk.Duration.minutes(1).toSeconds(),
+            stat: Stats.SUM,
+          },
+        },
+      ],
+    });
+
+    const highAlarm = Alarm.fromAlarmArn(this, "HighAlarm", alarm.attrArn);
+
+    const deploymentGroup = new LambdaDeploymentGroup(
+      this,
+      "LambdaDeploymentGroup",
+      {
+        application: codedeployApplication,
+        alias,
+        autoRollback: {
+          deploymentInAlarm: true,
+          failedDeployment: true,
+          stoppedDeployment: true,
+        },
+        deploymentConfig: LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES,
+        alarms: [highAlarm],
+      }
+    );
 
     // We create an API Gateway here because our code only understands API Gateway Proxy requests. If our code understood other types of requests (like normal, unwrapped HTTP requests), we could also skip the API Gateway completely and use Lambda function URLs instead as our CloudFront target.
     const apiGW = new LambdaRestApi(this, "APIGateway", {
