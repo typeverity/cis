@@ -32,7 +32,7 @@ jobs:
           cache: false
       - run: |
           cabal update
-          cabal build cisserver --enable-executable-static
+          cabal build cisserver
           cp $(cabal list-bin cisserver) out/bootstrap
       - uses: actions/upload-artifact@v4
         with:
