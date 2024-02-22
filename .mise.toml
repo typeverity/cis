@@ -2,3 +2,4 @@
 ghc = "latest"
 cabal = "latest"
 hls = "latest"
+node = "lts"
