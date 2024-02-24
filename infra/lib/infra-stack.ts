@@ -95,12 +95,24 @@ export class InfraStack extends cdk.Stack {
       metricName: errorsMetric.metricName,
     });
 
+    // const errorRate = new MathExpression({
+    //   expression: `100*(errors/invocations)`,
+    //   usingMetrics: { errors: errorsMetric, invocations: invocationsMetric },
+    // });
+
+    // const anomalyMetric = new MathExpression({
+    //   expression: `ANOMALY_DETECTION_BAND(error_rate, 2)`,
+    //   usingMetrics: { error_rate: errorRate },
+    // });
+
     const alarm = new CfnAlarm(this, "AnomalyDetectorAlarm", {
       comparisonOperator: ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
-      thresholdMetricId: "a1",
+      thresholdMetricId: "ad2",
       evaluationPeriods: 3,
       metrics: [
         {
+          id: "invocations",
+          returnData: false,
           metricStat: {
             metric: {
               namespace: invocationsMetric.namespace,
@@ -109,21 +121,9 @@ export class InfraStack extends cdk.Stack {
             period: cdk.Duration.minutes(1).toSeconds(),
             stat: Stats.SUM,
           },
-          id: "i1",
-          returnData: false,
         },
         {
-          expression: `100*(e1/i1)`,
-          id: "ratio",
-          returnData: true,
-        },
-        {
-          expression: `ANOMALY_DETECTION_BAND(ratio, 2)`,
-          id: "a1",
-          returnData: true,
-        },
-        {
-          id: "e1",
+          id: "errors",
           returnData: false,
           metricStat: {
             metric: {
@@ -133,6 +133,16 @@ export class InfraStack extends cdk.Stack {
             period: cdk.Duration.minutes(1).toSeconds(),
             stat: Stats.SUM,
           },
+        },
+        {
+          expression: `100*(errors/invocations)`,
+          id: "error_rate",
+          returnData: true,
+        },
+        {
+          expression: `ANOMALY_DETECTION_BAND(error_rate, 2)`,
+          id: "ad2",
+          returnData: true,
         },
       ],
     });
