@@ -11,13 +11,15 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  id-token: write
+  actions: read
+
 jobs:
   diff:
     name: CDK Diff
     runs-on: namespace-profile-arm64
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - uses: actions/checkout@v4
       - uses: namespacelabs/nscloud-cache-action@v1
