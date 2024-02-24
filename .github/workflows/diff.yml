@@ -6,8 +6,6 @@ on:
       - Build Lambda
     types:
       - completed
-    branches-ignore:
-      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -45,6 +43,5 @@ jobs:
         with:
           aws-region: eu-north-1
           role-to-assume: arn:aws:iam::029230740929:role/GitHubDeploymentRole
-      - if: github.ref_name != 'main'
-        run: npm run cdk diff -- --all --require-approval=never
+      - run: npm run cdk diff -- --all --require-approval=never
         working-directory: infra
