@@ -7,8 +7,8 @@ on:
         value: ${{ jobs.build.outputs.binary }}
 
 jobs:
-  build:
-    name: Build lambdas
+  Build:
+    name: Lambda
     runs-on: namespace-profile-arm64
     outputs:
       binary: ${{ env.artifact-name }}
