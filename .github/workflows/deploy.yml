@@ -1,53 +1,22 @@
-name: Build and Deploy
+name: CDK Deploy
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - Build Lambda
     branches:
       - main
-  pull_request:
-    branches:
-      - main
-    paths-ignore:
-      - infra/**
+    types:
+      - completed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build lambdas
+  deploy:
+    name: CDK Deploy
     runs-on: namespace-profile-arm64
-    steps:
-      - uses: actions/checkout@v4
-      - uses: namespacelabs/nscloud-cache-action@v1
-        with:
-          path: |
-            ~/.cabal
-            ~/.local/share/mise
-            ~/.ghcup
-            ~/.npm
-            ./infra/node_modules
-      - uses: jdx/mise-action@v2
-        with:
-          experimental: true
-          cache: false
-      - name: Cabal build
-        run: |
-          cabal update
-          cabal build cisserver
-          cp $(cabal list-bin cisserver) out/bootstrap
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cisserver-${{ github.sha }}
-          path: out/bootstrap
-          if-no-files-found: error
-
-  deploy_or_diff:
-    name: ${{ github.ref_name == 'main' && 'Deploy' || 'Diff' }}
-    runs-on: namespace-profile-arm64
-    needs:
-      - build
     permissions:
       contents: read
       id-token: write
@@ -79,9 +48,6 @@ jobs:
         with:
           aws-region: eu-north-1
           role-to-assume: arn:aws:iam::029230740929:role/GitHubDeploymentRole
-      - if: github.ref_name != 'main'
-        run: npm run cdk diff -- --all --require-approval=never
-        working-directory: infra
       - if: github.ref_name == 'main'
         run: npm run cdk deploy -- --all --require-approval=never
         working-directory: infra
