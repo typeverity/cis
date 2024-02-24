@@ -13,17 +13,22 @@ concurrency:
 
 jobs:
   check-cdk:
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      id-token: write
+    runs-on: namespace-profile-arm64
     steps:
       - uses: actions/checkout@v4
 
-      - uses: buildjet/setup-node@v3
+      - uses: namespacelabs/nscloud-cache-action@v1
         with:
-          cache: npm
-          cache-dependency-path: infra/package-lock.json
+          path: |
+            ~/.cabal
+            ~/.local/share/mise
+            ~/.ghcup
+            ~/.npm
+            ./infra/node_modules
+      - uses: jdx/mise-action@v2
+        with:
+          experimental: true
+          cache: false
 
       - run: npm ci
         working-directory: infra
