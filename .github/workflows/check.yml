@@ -1,9 +1,7 @@
 name: Check CDK builds
 
 on:
-  pull_request:
-    branches:
-      - main
+  push:
     paths:
       - infra/**
 
