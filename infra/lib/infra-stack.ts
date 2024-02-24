@@ -114,7 +114,7 @@ export class InfraStack extends cdk.Stack {
         {
           expression: `100*(e1/i1)`,
           id: "ratio",
-          returnData: false,
+          returnData: true,
         },
         {
           expression: `ANOMALY_DETECTION_BAND(ratio, 2)`,
