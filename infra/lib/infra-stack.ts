@@ -110,18 +110,21 @@ export class InfraStack extends cdk.Stack {
             stat: Stats.SUM,
           },
           id: "i1",
+          returnData: false,
         },
         {
           expression: `100*(e1/i1)`,
           id: "ratio",
-          returnData: true,
+          returnData: false,
         },
         {
           expression: `ANOMALY_DETECTION_BAND(ratio, 2)`,
           id: "a1",
+          returnData: true,
         },
         {
           id: "e1",
+          returnData: false,
           metricStat: {
             metric: {
               namespace: errorsMetric.namespace,
