@@ -1,0 +1,41 @@
+name: Build Lambda
+
+on:
+  workflow_call:
+    outputs:
+      binary:
+        value: ${{ jobs.build.outputs.binary }}
+
+jobs:
+  build:
+    name: Lambda
+    runs-on: namespace-profile-arm64
+    outputs:
+      binary: ${{ env.artifact-name }}
+    env:
+      artifact-name: cisserver-${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ~/.cabal
+            ~/.local/share/mise
+            ~/.ghcup
+            ~/.npm
+            ./infra/node_modules
+      - uses: jdx/mise-action@v2
+        with:
+          experimental: true
+          cache: false
+      - name: Cabal build
+        run: |
+          cabal update
+          cabal build cisserver
+          cp $(cabal list-bin cisserver) out/bootstrap
+      - uses: actions/upload-artifact@v4
+        id: upload
+        with:
+          name: ${{ env.artifact-name }}
+          path: out/bootstrap
+          if-no-files-found: error

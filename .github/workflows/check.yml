@@ -1,0 +1,35 @@
+name: Check CDK builds
+
+on:
+  push:
+    paths:
+      - infra/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  check-cdk:
+    runs-on: namespace-profile-arm64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ~/.cabal
+            ~/.local/share/mise
+            ~/.ghcup
+            ~/.npm
+            ./infra/node_modules
+      - uses: jdx/mise-action@v2
+        with:
+          experimental: true
+          cache: false
+
+      - run: npm ci
+        working-directory: infra
+
+      - run: npm run build
+        working-directory: infra

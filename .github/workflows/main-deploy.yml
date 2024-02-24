@@ -1,0 +1,53 @@
+name: CDK Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  deploy:
+    name: CDK Deploy
+    runs-on: namespace-profile-arm64
+    needs:
+      - build
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: Production
+      url: https://glenda.loveistheplan.net
+    steps:
+      - uses: actions/checkout@v4
+      - uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ~/.cabal
+            ~/.local/share/mise
+            ~/.ghcup
+            ~/.npm
+            ./infra/node_modules
+      - uses: jdx/mise-action@v2
+        with:
+          experimental: true
+          cache: false
+      - run: npm ci
+        working-directory: infra
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.binary }}
+          path: out/
+      - run: ls -l out
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-north-1
+          role-to-assume: arn:aws:iam::029230740929:role/GitHubDeploymentRole
+      - run: npm run cdk deploy -- --all --require-approval=never
+        working-directory: infra

@@ -1,0 +1,52 @@
+name: CDK Diff
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    name: Build
+    uses: ./.github/workflows/build.yml
+
+  diff:
+    name: CDK Diff
+    runs-on: namespace-profile-arm64
+    needs:
+      - build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: namespacelabs/nscloud-cache-action@v1
+        with:
+          path: |
+            ~/.cabal
+            ~/.local/share/mise
+            ~/.ghcup
+            ~/.npm
+            ./infra/node_modules
+      - uses: jdx/mise-action@v2
+        with:
+          experimental: true
+          cache: false
+      - run: npm ci
+        working-directory: infra
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.binary }}
+          path: out/
+      - run: ls -l out
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-north-1
+          role-to-assume: arn:aws:iam::029230740929:role/GitHubDeploymentRole
+      - run: npm run cdk diff -- --all --require-approval=never
+        working-directory: infra
