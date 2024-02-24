@@ -1,18 +1,17 @@
 name: Build Lambda
 
 on:
-  push:
-    paths-ignore:
-      - infra/**
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref_name }}
-  cancel-in-progress: true
+  workflow_call:
+    outputs:
+      binary:
+        value: ${{ jobs.build.outputs.binary }}
 
 jobs:
   build:
     name: Build lambdas
     runs-on: namespace-profile-arm64
+    outputs:
+      binary: ${{ steps.upload.outputs.artifact-id }}
     steps:
       - uses: actions/checkout@v4
       - uses: namespacelabs/nscloud-cache-action@v1
@@ -33,6 +32,7 @@ jobs:
           cabal build cisserver
           cp $(cabal list-bin cisserver) out/bootstrap
       - uses: actions/upload-artifact@v4
+        id: upload
         with:
           name: cisserver-${{ github.sha }}
           path: out/bootstrap

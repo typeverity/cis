@@ -1,11 +1,9 @@
 name: CDK Diff
 
 on:
-  workflow_run:
-    workflows:
-      - Build Lambda
-    types:
-      - completed
+  pull_request:
+    paths:
+      - "infra/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -14,12 +12,16 @@ concurrency:
 permissions:
   contents: read
   id-token: write
-  actions: read
 
 jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
   diff:
     name: CDK Diff
     runs-on: namespace-profile-arm64
+    needs:
+      - build
     steps:
       - uses: actions/checkout@v4
       - uses: namespacelabs/nscloud-cache-action@v1
@@ -38,7 +40,7 @@ jobs:
         working-directory: infra
       - uses: actions/download-artifact@v4
         with:
-          name: cisserver-${{ github.sha }}
+          name: ${{ needs.build.outputs.binary }}
           path: out/
       - run: ls -l out
       - uses: aws-actions/configure-aws-credentials@v4

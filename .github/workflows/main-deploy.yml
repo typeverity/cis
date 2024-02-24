@@ -1,22 +1,23 @@
 name: CDK Deploy
 
 on:
-  workflow_run:
-    workflows:
-      - Build Lambda
+  push:
     branches:
       - main
-    types:
-      - completed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
   deploy:
     name: CDK Deploy
     runs-on: namespace-profile-arm64
+    needs:
+      - build
     permissions:
       contents: read
       id-token: write
@@ -41,13 +42,12 @@ jobs:
         working-directory: infra
       - uses: actions/download-artifact@v4
         with:
-          name: cisserver-${{ github.sha }}
+          name: ${{ needs.build.outputs.binary }}
           path: out/
       - run: ls -l out
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-north-1
           role-to-assume: arn:aws:iam::029230740929:role/GitHubDeploymentRole
-      - if: github.ref_name == 'main'
-        run: npm run cdk deploy -- --all --require-approval=never
+      - run: npm run cdk deploy -- --all --require-approval=never
         working-directory: infra
