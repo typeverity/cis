@@ -86,6 +86,7 @@ export class InfraStack extends cdk.Stack {
       version: lambda.currentVersion,
     });
 
+    const invocationsMetric = lambda.metricInvocations();
     const errorsMetric = lambda.metricErrors();
 
     const anomalyDetector = new CfnAnomalyDetector(this, "AnomalyDetector", {
@@ -96,15 +97,30 @@ export class InfraStack extends cdk.Stack {
 
     const alarm = new CfnAlarm(this, "AnomalyDetectorAlarm", {
       comparisonOperator: ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
-      thresholdMetricId: "e1",
+      thresholdMetricId: "a1",
       evaluationPeriods: 3,
       metrics: [
         {
-          expression: `ANOMALY_DETECTION_BAND(m1, 2)`,
-          id: "e1",
+          metricStat: {
+            metric: {
+              namespace: invocationsMetric.namespace,
+              metricName: invocationsMetric.metricName,
+            },
+            period: cdk.Duration.minutes(1).toSeconds(),
+            stat: Stats.SUM,
+          },
+          id: "i1",
         },
         {
-          id: "m1",
+          expression: `100*(e1/i1)`,
+          id: "ratio",
+        },
+        {
+          expression: `ANOMALY_DETECTION_BAND(ratio, 2)`,
+          id: "a1",
+        },
+        {
+          id: "e1",
           metricStat: {
             metric: {
               namespace: errorsMetric.namespace,
